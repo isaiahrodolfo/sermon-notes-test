@@ -1,5 +1,10 @@
-import { Text } from "react-native";
+import PdfRendererView from "react-native-pdf-renderer";
 
 export default function Slides() {
-  return <Text>Slides</Text>;
+  return (
+    <PdfRendererView
+      source="src/assets/LetThem_Guide_Leading_Teams.pdf"
+      style={{ flex: 1 }}
+    />
+  );
 }
