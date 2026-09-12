@@ -48,6 +48,8 @@ export default function PDFExample() {
         onPressLink={(uri) => {
           console.log(`Link pressed: ${uri}`);
         }}
+        singlePage={true}
+        scrollEnabled={false}
         style={styles.pdf}
       />
     </View>
