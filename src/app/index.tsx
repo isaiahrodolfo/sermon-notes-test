@@ -1,161 +1,61 @@
-import { File, Paths } from "expo-file-system";
-import { fetch } from "expo/fetch";
-import { useCallback, useEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  Modal,
-  SafeAreaView,
-  StatusBar,
-  Text,
-  View,
-} from "react-native";
-import PdfRendererView from "react-native-pdf-renderer";
-// import ReactNativeBlobUtil from 'react-native-blob-util';
+/**
+ * Copyright (c) 2017-present, Wonday (@wonday.org)
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
-const PDF_URL =
-  "https://github.com/douglasjunior/react-native-pdf-renderer/raw/refs/heads/main/Sample/A17_FlightPlan.pdf"; // 618 pages
-// "../assets/LetThem_Guide_Leading_Teams.pdf"; // 41 pages
-// const PDF_URL = 'https://github.com/ArturT/Test-PDF-Files/raw/refs/heads/master/not_encrypted.pdf'; // 1 pages
-// const PDF_URL = 'https://github.com/ArturT/Test-PDF-Files/raw/refs/heads/master/corrupted.pdf'; // corrupted
+import React from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
+import Pdf from "react-native-pdf";
 
-const PdfView = ({ source }: { source: string }) => {
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [singlePage, setSinglePage] = useState(false);
+export default class PDFExample extends React.Component {
+  render() {
+    const source = {
+      uri: "https://github.com/douglasjunior/react-native-pdf-renderer/raw/refs/heads/main/Sample/A17_FlightPlan.pdf",
+      cache: true,
+    };
+    //const source = require('./test.pdf');  // ios only
+    //const source = {uri:'bundle-assets://test.pdf' };
+    //const source = {uri:'file:///sdcard/test.pdf'};
+    //const source = {uri:"data:application/pdf;base64,JVBERi0xLjcKJc..."};
+    //const source = {uri:"content://com.example.blobs/xxxxxxxx-...?offset=0&size=xxx"};
+    //const source = {uri:"blob:xxxxxxxx-...?offset=0&size=xxx"};
 
-  return (
-    <View style={{ flex: 1 }}>
-      <Button
-        title="Single Page"
-        onPress={() => setSinglePage((prev) => !prev)}
-      />
-      <PdfRendererView
-        style={{ backgroundColor: "red" }}
-        source={source}
-        distanceBetweenPages={16}
-        maxZoom={20}
-        maxPageResolution={2048}
-        singlePage={singlePage}
-        onPageChange={(current, total) => {
-          console.log("onPageChange", { current, total });
-          setCurrentPage(current);
-          setTotalPages(total);
-        }}
-        onError={() => {
-          console.warn("Error loading PDF");
-          Alert.alert("Error", "Error loading PDF");
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          bottom: 16,
-          left: 0,
-          right: 0,
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            backgroundColor: "rgba(255,255,255,0.5)",
-            color: "black",
-            padding: 4,
-            borderRadius: 4,
+    return (
+      <View style={styles.container}>
+        <Pdf
+          source={source}
+          onLoadComplete={(numberOfPages, filePath) => {
+            console.log(`Number of pages: ${numberOfPages}`);
           }}
-        >
-          {currentPage + 1}/{totalPages}
-        </Text>
+          onPageChanged={(page, numberOfPages) => {
+            console.log(`Current page: ${page}`);
+          }}
+          onError={(error) => {
+            console.log(error);
+          }}
+          onPressLink={(uri) => {
+            console.log(`Link pressed: ${uri}`);
+          }}
+          style={styles.pdf}
+        />
       </View>
-    </View>
-  );
-};
-
-function App() {
-  const [downloading, setDownloading] = useState(false);
-
-  const [toggle, setToggle] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [source, setSource] = useState<string>();
-
-  const downloadWithExpoFileSystem = useCallback(async () => {
-    try {
-      setDownloading(true);
-      /**
-       * Download the PDF file with any other library, like  "expo-file-system", "rn-fetch-blob" or "react-native-blob-util"
-       */
-      const response = await fetch(PDF_URL);
-      const src = new File(Paths.cache, "let_them.pdf");
-      src.write(await response.bytes());
-      /*
-       * Then, set the local file URI to state and pass to the PdfRendererView source prop.
-       */
-      setSource(src.uri);
-    } catch (err) {
-      console.warn(err);
-    } finally {
-      setDownloading(false);
-    }
-  }, []);
-
-  // const downloadWithBlobUtil = useCallback(async () => {
-  //   try {
-  //     setDownloading(true);
-  //     /**
-  //      * Download the PDF file with any other library, like  "expo-file-system", "rn-fetch-blob" or "react-native-blob-util"
-  //      */
-  //     const dirs = ReactNativeBlobUtil.fs.dirs;
-  //     const response = await ReactNativeBlobUtil.config({
-  //       path: dirs.DocumentDir + '/file.pdf',
-  //     }).fetch('GET', PDF_URL);
-  //     /*
-  //      * Then, set the local file URI to state and pass to the PdfRendererView source prop.
-  //      */
-  //     setSource(response.path());
-  //   } catch (err) {
-  //     console.warn(err);
-  //   } finally {
-  //     setDownloading(false);
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    downloadWithExpoFileSystem();
-    // downloadWithBlobUtil();
-  }, [downloadWithExpoFileSystem]);
-
-  const renderPdfView = () => {
-    if (downloading || !source) {
-      return <Text>Downloading...</Text>;
-    }
-
-    return <PdfView source={source} />;
-  };
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar translucent={false} />
-
-      <Button
-        title="Mount/Unmount"
-        onPress={() => setToggle((prev) => !prev)}
-      />
-      <Button title="Show modal" onPress={() => setModalVisible(true)} />
-
-      {toggle ? renderPdfView() : <Text>Unmounted</Text>}
-
-      <Modal
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-        navigationBarTranslucent={false}
-        statusBarTranslucent={false}
-        style={{ flex: 1 }}
-      >
-        <Button title="Close modal" onPress={() => setModalVisible(false)} />
-        {renderPdfView()}
-      </Modal>
-    </SafeAreaView>
-  );
+    );
+  }
 }
 
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginTop: 25,
+  },
+  pdf: {
+    flex: 1,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+  },
+});

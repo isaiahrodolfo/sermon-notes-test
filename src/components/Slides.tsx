@@ -1,15 +1,5 @@
-import PdfRendererView from "react-native-pdf-renderer";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Text } from "react-native";
 
 export default function Slides() {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <PdfRendererView
-        style={{ flex: 1 }}
-        source={require("../assets/LetThem_Guide_Leading_Teams.pdf")}
-        distanceBetweenPages={16}
-        maxZoom={5}
-      />
-    </SafeAreaView>
-  );
+  return <Text>Slides</Text>;
 }
