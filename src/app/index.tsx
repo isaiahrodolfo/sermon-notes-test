@@ -7,43 +7,51 @@
  */
 
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Button, Dimensions, StyleSheet, View } from "react-native";
 import Pdf from "react-native-pdf";
 
-export default class PDFExample extends React.Component {
-  render() {
-    const source = {
-      uri: "https://github.com/douglasjunior/react-native-pdf-renderer/raw/refs/heads/main/Sample/A17_FlightPlan.pdf",
-      cache: true,
-    };
-    //const source = require('./test.pdf');  // ios only
-    //const source = {uri:'bundle-assets://test.pdf' };
-    //const source = {uri:'file:///sdcard/test.pdf'};
-    //const source = {uri:"data:application/pdf;base64,JVBERi0xLjcKJc..."};
-    //const source = {uri:"content://com.example.blobs/xxxxxxxx-...?offset=0&size=xxx"};
-    //const source = {uri:"blob:xxxxxxxx-...?offset=0&size=xxx"};
+export default function PDFExample() {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const pdfRef = React.useRef<any>(null);
 
-    return (
-      <View style={styles.container}>
-        <Pdf
-          source={source}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`Number of pages: ${numberOfPages}`);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-            console.log(`Current page: ${page}`);
-          }}
-          onError={(error) => {
-            console.log(error);
-          }}
-          onPressLink={(uri) => {
-            console.log(`Link pressed: ${uri}`);
-          }}
-          style={styles.pdf}
-        />
-      </View>
-    );
-  }
+  const source = {
+    uri: "https://github.com/douglasjunior/react-native-pdf-renderer/raw/refs/heads/main/Sample/A17_FlightPlan.pdf",
+    cache: true,
+  };
+
+  const handleChangePage = (delta: number) => () => {
+    if (pdfRef.current) {
+      const newPage = currentPage + delta;
+      if (newPage > 0) {
+        pdfRef.current.setPage(newPage);
+        setCurrentPage(newPage);
+      }
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Button title="Next Page" onPress={handleChangePage(1)} />
+      <Button title="Previous Page" onPress={handleChangePage(-1)} />
+      <Pdf
+        ref={pdfRef}
+        source={source}
+        onLoadComplete={(numberOfPages, filePath) => {
+          console.log(`Number of pages: ${numberOfPages}`);
+        }}
+        onPageChanged={(page, numberOfPages) => {
+          console.log(`Current page: ${page}`);
+        }}
+        onError={(error) => {
+          console.log(error);
+        }}
+        onPressLink={(uri) => {
+          console.log(`Link pressed: ${uri}`);
+        }}
+        style={styles.pdf}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
