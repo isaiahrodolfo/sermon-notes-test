@@ -10,16 +10,14 @@ export default function Slides({
   aspectRatio: number;
 }) {
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [pdfAspectRatio, setPdfAspectRatio] = React.useState<number | null>(
-    aspectRatio,
-  ); // a4, change for default sermon ratio
 
   const pdfRef = React.useRef<any>(null);
 
   const screenWidth = Dimensions.get("window").width;
   const pdfWidth = screenWidth - 100;
+  const pdfHeight = aspectRatio ? pdfWidth / aspectRatio : pdfWidth;
 
-  const pdfHeight = pdfAspectRatio ? pdfWidth / pdfAspectRatio : pdfWidth;
+  console.log(pdfWidth, pdfHeight);
 
   const source = {
     uri: pages[(currentPage - 1) % pages.length],
@@ -40,7 +38,8 @@ export default function Slides({
       <View
         style={{
           width: pdfWidth,
-          height: 250,
+          height: pdfHeight,
+          backgroundColor: "red",
         }}
       >
         <Pdf
@@ -49,8 +48,6 @@ export default function Slides({
           onLoadComplete={(numberOfPages, filePath, { width, height }) => {
             console.log(`Number of pages: ${numberOfPages}`);
             console.log(`PDF size: ${width} x ${height}`);
-
-            setPdfAspectRatio(width / height);
           }}
           onError={(error) => {
             console.log(error);
@@ -58,7 +55,7 @@ export default function Slides({
           onPressLink={(uri) => {
             console.log(`Link pressed: ${uri}`);
           }}
-          style={[styles.pdf, { width: pdfWidth, height: pdfHeight }]}
+          style={styles.pdf}
         />
       </View>
 

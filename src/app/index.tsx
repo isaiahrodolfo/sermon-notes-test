@@ -13,7 +13,7 @@ const pages = [
 export default function App() {
   return (
     <View style={{ flex: 1, backgroundColor: "black" }}>
-      <Slides pages={pages} aspectRatio={297 / 210} />
+      <Slides pages={pages} aspectRatio={210 / 297} />
       <TextEditor />
     </View>
   );
