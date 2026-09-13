@@ -2,18 +2,17 @@ import React from "react";
 import { Button, Dimensions, StyleSheet, View } from "react-native";
 import Pdf from "react-native-pdf";
 
-const pages = [
-  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/letter.pdf",
-  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/linespacing.pdf",
-  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/lowleveltext.pdf",
-  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/margin.pdf",
-];
-
-export default function Slides() {
+export default function Slides({
+  pages,
+  aspectRatio,
+}: {
+  pages: string[];
+  aspectRatio: number;
+}) {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pdfAspectRatio, setPdfAspectRatio] = React.useState<number | null>(
-    null,
-  );
+    aspectRatio,
+  ); // a4, change for default sermon ratio
 
   const pdfRef = React.useRef<any>(null);
 
@@ -41,7 +40,7 @@ export default function Slides() {
       <View
         style={{
           width: pdfWidth,
-          height: pdfHeight,
+          height: 250,
         }}
       >
         <Pdf
@@ -59,7 +58,7 @@ export default function Slides() {
           onPressLink={(uri) => {
             console.log(`Link pressed: ${uri}`);
           }}
-          style={styles.pdf}
+          style={[styles.pdf, { width: pdfWidth, height: pdfHeight }]}
         />
       </View>
 
