@@ -18,7 +18,7 @@ export default function Slides() {
   const pdfRef = React.useRef<any>(null);
 
   const screenWidth = Dimensions.get("window").width;
-  const pdfWidth = screenWidth - 20;
+  const pdfWidth = screenWidth - 100;
 
   const pdfHeight = pdfAspectRatio ? pdfWidth / pdfAspectRatio : pdfWidth;
 
