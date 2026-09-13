@@ -2,6 +2,13 @@ import React from "react";
 import { Button, Dimensions, StyleSheet, View } from "react-native";
 import Pdf from "react-native-pdf";
 
+const pages = [
+  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/letter.pdf",
+  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/linespacing.pdf",
+  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/lowleveltext.pdf",
+  "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/margin.pdf",
+];
+
 export default function PDFExample() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pdfAspectRatio, setPdfAspectRatio] = React.useState<number | null>(
@@ -16,7 +23,7 @@ export default function PDFExample() {
   const pdfHeight = pdfAspectRatio ? pdfWidth / pdfAspectRatio : pdfWidth;
 
   const source = {
-    uri: "https://github.com/ralfstuckert/pdfbox-layout/raw/master/examples/letter.pdf",
+    uri: pages[currentPage - 1],
     cache: true,
   };
 
@@ -45,9 +52,6 @@ export default function PDFExample() {
             console.log(`PDF size: ${width} x ${height}`);
 
             setPdfAspectRatio(width / height);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-            setCurrentPage(page);
           }}
           onError={(error) => {
             console.log(error);
