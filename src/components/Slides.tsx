@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
 
   pdf: {
     flex: 1,
+    backgroundColor: "transparent",
   },
 
   buttons: {
